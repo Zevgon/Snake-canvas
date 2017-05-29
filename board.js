@@ -4,7 +4,7 @@ import {
   COLOR_MAP,
 } from './constants';
 
-export default class Grid {
+export default class Board {
   constructor(rows, cols, canvasEl) {
     this.rows = rows;
     this.cols = cols;

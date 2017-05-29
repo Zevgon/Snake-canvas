@@ -1,18 +1,18 @@
-import Grid from './grid';
+import Grid from './board';
 import { KEY_TO_DIR } from './constants';
 
 export default class Game {
   constructor(rows, columns) {
     this.rows = rows;
     this.columns = columns;
-    this.grid = new Grid(rows, columns, document.getElementById('canvas'));
+    this.board = new Grid(rows, columns, document.getElementById('canvas'));
     this.startEventListner();
   }
 
   startEventListner() {
     document.addEventListener('keydown', e => {
       const dir = KEY_TO_DIR[e.which];
-      this.grid.changeDirection(dir);
+      this.board.changeDirection(dir);
     });
   }
 
@@ -21,10 +21,10 @@ export default class Game {
   }
 
   handleMove() {
-    const moved = this.grid.move();
+    const moved = this.board.move();
     if (!moved) {
       clearInterval(this.interval);
-      this.grid.reset();
+      this.board.reset();
     }
   }
 }
