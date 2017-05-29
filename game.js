@@ -1,23 +1,9 @@
 import Snake from './snake.js';
-
-const COLOR_MAP = {
-  'snake': 'red',
-  'empty': 'white',
-}
-
-const KEY_TO_DIR = {
-  '37': 'w',
-  '38': 'n',
-  '39': 'e',
-  '40': 's',
-}
-
-const VALID_DIRS = {
-  'n': ['e', 'w'],
-  's': ['e', 'w'],
-  'e': ['n', 's'],
-  'w': ['n', 's'],
-}
+import {
+  COLOR_MAP,
+  KEY_TO_DIR,
+  VALID_DIRS,
+} from './constants';
 
 export default class Game {
   constructor(rows, columns) {
@@ -30,10 +16,14 @@ export default class Game {
     this.heightRatio = parseInt(height / rows);
     this.grid = canvas.getContext("2d");
     this.grid.scale(this.widthRatio, this.heightRatio);
+    this.reset();
+    this.startEventListner();
+  }
+
+  reset() {
     this.snake = new Snake([this.getStartingCoord()]);
     this.fillSquare(this.snake.head(), 'snake');
     this.direction = 'n';
-    this.startEventListner();
   }
 
   validDirection(dir) {
@@ -72,11 +62,34 @@ export default class Game {
     this.grid.fillRect(...this.coordToCanvas(coord));
   }
 
+  validPos(pos) {
+    if (this.snake.set.has(pos.toString()) &&
+        pos.toString() !== this.snake.head().toString()) {
+      return false;
+    }
+    if (pos[0] < 0 || pos[0] >= this.columns || pos[1] < 0 || pos[1] >= this.rows) {
+      return false;
+    }
+    return true;
+  }
+
+  clearSnake() {
+    this.snake.queue.forEach(coord => {
+      this.fillSquare(coord, 'empty');
+    });
+  }
+
   move() {
     const tail = this.snake.move(this.direction);
     if (tail) {
       this.fillSquare(tail, 'empty');
     }
-    this.fillSquare(this.snake.head(), 'snake');
+    if (this.validPos(this.snake.head())) {
+      this.fillSquare(this.snake.head(), 'snake');
+    } else {
+      clearInterval(this.interval);
+      this.clearSnake();
+      this.reset();
+    }
   }
 }
